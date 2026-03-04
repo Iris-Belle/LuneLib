@@ -1,0 +1,8 @@
+displayName = LuneLib
+author = Iris
+version = 1.8.0
+weakReferences = CalamityMod, InfernumMode, CalValEX, ThoriumMod, SpiritMod
+hideCode = false
+hideResources = false
+includeSource = true
+homepage = https://discord.com/invite/FwmGf6vBu2

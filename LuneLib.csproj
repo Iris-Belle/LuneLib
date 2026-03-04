@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\tModLoader.targets" />
+	<PropertyGroup>
+		<AssemblyName>LuneLib</AssemblyName>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="MoveToGlobalUsingsAnalyzer" Version="1.4.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Reference Include="CalValEX">
+			<HintPath>..\..\ModReader\CalValEX\CalValEX.dll</HintPath>
+		</Reference>
+		<Reference Include="CalamityMod">
+			<HintPath>..\..\ModReader\CalamityMod\CalamityMod.dll</HintPath>
+		</Reference>
+		<Reference Include="SpiritMod">
+			<HintPath>..\..\ModReader\SpiritMod\SpiritMod.dll</HintPath>
+		</Reference>
+		<Reference Include="InfernumMode">
+			<HintPath>..\..\ModReader\InfernumMode\InfernumMode.dll</HintPath>
+		</Reference>
+		<Reference Include="ThoriumMod">
+			<HintPath>..\..\ModReader\ThoriumMod\ThoriumMod.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+</Project>

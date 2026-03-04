@@ -1,0 +1,31 @@
+Headers.Debug: Debug
+DisplayName: Debug
+
+LL: {
+	Label: LL
+	Tooltip:
+		'''
+		This just checks if its a certain player.
+		Most likely wont do anything for you.
+		'''
+}
+
+TestMode: {
+	Label: Test Mode
+	Tooltip: debugging for LL
+}
+
+CheckIris: {
+	Label: Check Iris
+	Tooltip: ""
+}
+
+CheckMushy: {
+	Label: Check Mushy
+	Tooltip: ""
+}
+
+CheckNotGoldArc: {
+	Label: Check Not Gold Arc
+	Tooltip: ""
+}

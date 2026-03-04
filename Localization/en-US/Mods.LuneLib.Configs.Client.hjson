@@ -1,0 +1,21 @@
+dayshelptext: {
+	Label: Days Help Text
+	Tooltip: Toggles the red help text under the message of Days.
+}
+
+Days: {
+	Label: Days
+	Tooltip:
+		'''
+		Shows a sick-ass message at the start of every day and at night.
+		(Game reference)
+		'''
+}
+
+DebugMessages: {
+	Label: Debug Messages
+	Tooltip: shows information for me to test if something works as it should.
+}
+
+Headers.Client: Client
+DisplayName: Client
