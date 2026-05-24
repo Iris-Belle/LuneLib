@@ -6,12 +6,12 @@ public partial class LibPlayer : ModPlayer
 
     #region Is weaing any armour
 
-    public static bool WearingFullArmour { get; set; }
-    public static bool WearingTwoArmourPieces { get; set; }
-    public static bool WearingOneArmourPiece { get; set; }
-    public static bool WearingAnyArmour { get; set; }
+    public bool WearingFullArmour { get; set; }
+    public bool WearingTwoArmourPieces { get; set; }
+    public bool WearingOneArmourPiece { get; set; }
+    public bool WearingAnyArmour { get; set; }
 
-    public int PiecesArmour()
+    internal int PiecesArmour()
     {
         int armourCount = 0;
 
@@ -30,12 +30,12 @@ public partial class LibPlayer : ModPlayer
 
     #region Eskimo
 
-    public static bool WearingFullEskimo { get; set; }
-    public static bool WearingTwoEskimoPieces { get; set; }
-    public static bool WearingOneEskimoPiece { get; set; }
-    public static bool WearingAnyEskimo { get; set; }
+    public bool WearingFullEskimo { get; set; }
+    public bool WearingTwoEskimoPieces { get; set; }
+    public bool WearingOneEskimoPiece { get; set; }
+    public bool WearingAnyEskimo { get; set; }
 
-    public int PiecesEskimoArmour()
+    internal int PiecesEskimoArmour()
     {
         int eskimoCount = 0;
 
@@ -55,14 +55,14 @@ public partial class LibPlayer : ModPlayer
 
     #region astalite
 
-    public static bool WearingAstraliteVisor { get; set; }
-    public static bool WearingFullAstralite { get; set; }
-    public static bool WearingTwoAstralitePieces { get; set; }
-    public static bool WearingOneAstralitePiece { get; set; }
-    public static bool WearingAnyAstralite { get; set; }
+    public bool WearingAstraliteVisor { get; set; }
+    public bool WearingFullAstralite { get; set; }
+    public bool WearingTwoAstralitePieces { get; set; }
+    public bool WearingOneAstralitePiece { get; set; }
+    public bool WearingAnyAstralite { get; set; }
 
     [JITWhenModsEnabled("SpiritMod")]
-    public int PiecesAstraliteArmour()
+    internal int PiecesAstraliteArmour()
     {
         int AstraliteCount = 0;
 
@@ -93,14 +93,14 @@ public partial class LibPlayer : ModPlayer
 
     #region astronaut
 
-    public static bool WearingAstroHelm { get; set; }
-    public static bool WearingFullAstro { get; set; }
-    public static bool WearingTwoAstroPieces { get; set; }
-    public static bool WearingOneAstroPiece { get; set; }
-    public static bool WearingAnyAstro { get; set; }
+    public bool WearingAstroHelm { get; set; }
+    public bool WearingFullAstro { get; set; }
+    public bool WearingTwoAstroPieces { get; set; }
+    public bool WearingOneAstroPiece { get; set; }
+    public bool WearingAnyAstro { get; set; }
 
     [JITWhenModsEnabled("SpiritMod")]
-    public int PiecesAstroArmour()
+    internal int PiecesAstroArmour()
     {
         int astroCount = 0;
 
@@ -131,18 +131,20 @@ public partial class LibPlayer : ModPlayer
 
     #region fishbowl
 
-    public static bool IsWearingFishBowl { get; set; }
+    public bool IsWearingFishBowl { get; set; }
 
-    public bool WearingFishBowl() => Player.armor[0].type == ItemID.FishBowl;
+    internal bool WearingFishBowl() => Player.armor[0].type == ItemID.FishBowl;
 
     #endregion
 
-    public static bool WearingFullMetal { get; set; }
-    public static bool WearingTwoMetalPieces { get; set; }
-    public static bool WearingOneMetalPiece { get; set; }
-    public static bool WearingAnyMetal { get; set; }
+    #region metal
 
-    public int IsWearingMetal()
+    public bool WearingFullMetal { get; set; }
+    public bool WearingTwoMetalPieces { get; set; }
+    public bool WearingOneMetalPiece { get; set; }
+    public bool WearingAnyMetal { get; set; }
+
+    internal int IsWearingMetal()
     {
         int num = 0;
         for (int i = 0; i < 3; i++)
@@ -152,6 +154,8 @@ public partial class LibPlayer : ModPlayer
         }
         return num;
     }
+
+    #endregion
 
     #region Register
 
@@ -188,6 +192,129 @@ public partial class LibPlayer : ModPlayer
             WearingTwoAstroPieces = astroCount == 2;
             WearingOneAstroPiece = astroCount == 1;
             WearingAnyAstro = astroCount > 0;
+        }
+    }
+
+    #endregion
+
+    #region Diving Accessories
+
+    public bool WearingDivingHelm { get; set; }
+    public bool WearingDivingGear { get; set; }
+    public bool WearingJellyfishDivingGear { get; set; }
+    public bool WearingArcticDivingGear { get; set; }
+    public bool WearingAbyssalDivingGear { get; set; }
+    public bool WearingAbyssalDivingSuit { get; set; }
+
+    public override void UpdateEquips()
+    {
+        for (int i = 3; i < 10; i++)
+        {
+            if (!Player.IsItemSlotUnlockedAndUsable(i))
+                continue;
+
+            Item item = Player.armor[i];
+
+            if (item == null || item.IsAir)
+                continue;
+
+            CheckAccessory(item);
+        }
+        var slotLoader = LoaderManager.Get<AccessorySlotLoader>();
+        var modSlotPlayer = Player.GetModPlayer<ModAccessorySlotPlayer>();
+
+        for (int i = 0; i < modSlotPlayer.SlotCount; i++)
+        {
+            if (!slotLoader.ModdedIsItemSlotUnlockedAndUsable(i, Player))
+                continue;
+
+            Item item = slotLoader.Get(i, Player).FunctionalItem;
+
+            if (item == null || item.IsAir)
+                continue;
+
+            CheckAccessory(item);
+        }
+        Item head = Player.armor[0];
+
+        if (head != null && !head.IsAir && head.type == ItemID.DivingHelmet)
+            WearingDivingHelm = true;
+    }
+
+    private void CheckAccessory(Item item)
+    {
+        switch (item.type)
+        {
+            case ItemID.DivingGear:
+                WearingDivingGear = true;
+                break;
+
+            case ItemID.JellyfishDivingGear:
+                WearingJellyfishDivingGear = true;
+                break;
+
+            case ItemID.ArcticDivingGear:
+                WearingArcticDivingGear = true;
+                break;
+        }
+
+        if (ModLoader.HasMod("CalamityMod"))
+            CheckCalamityItems(item);
+    }
+
+    [JITWhenModsEnabled("CalamityMod")]
+    private void CheckCalamityItems(Item item)
+    {
+        if (item.type == ModContent.ItemType<AbyssalDivingGear>())
+            WearingAbyssalDivingGear = true;
+        else if (item.type == ModContent.ItemType<AbyssalDivingSuit>())
+            WearingAbyssalDivingSuit = true;
+    }
+
+    public class DivingAccessoryGlobalItem : GlobalItem
+    {
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            var pLib = player.GetModPlayer<LibPlayer>();
+
+            switch (item.type)
+            {
+                case ItemID.DivingGear:
+                    pLib.WearingDivingGear = true;
+                    break;
+
+                case ItemID.JellyfishDivingGear:
+                    pLib.WearingJellyfishDivingGear = true;
+                    break;
+
+                case ItemID.ArcticDivingGear:
+                    pLib.WearingArcticDivingGear = true;
+                    break;
+            }
+        }
+
+        public override void UpdateEquip(Item item, Player player)
+        {
+            if (item.type == ItemID.DivingHelmet)
+                player.GetModPlayer<LibPlayer>().WearingDivingHelm = true;
+        }
+    }
+
+    [JITWhenModsEnabled("CalamityMod")]
+    public class CalamityDivingAccessoryGlobalItem : GlobalItem
+    {
+        public override bool IsLoadingEnabled(Mod mod)
+            => ModLoader.HasMod("CalamityMod");
+
+        [JITWhenModsEnabled("CalamityMod")]
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+        {
+            var pLib = player.GetModPlayer<LibPlayer>();
+
+            if (item.type == ModContent.ItemType<AbyssalDivingGear>())
+                pLib.WearingAbyssalDivingGear = true;
+            else if (item.type == ModContent.ItemType<AbyssalDivingSuit>())
+                pLib.WearingAbyssalDivingSuit = true;
         }
     }
 

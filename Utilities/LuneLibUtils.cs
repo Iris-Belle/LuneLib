@@ -4,11 +4,13 @@ public static class LuneLibUtils
 {
 
     #region run once system
-
+    private static readonly byte[,] runFlagBuckets = new byte[256, 256];
+    private static readonly byte[,] runFlags = new byte[256, MAX_RUN_FLAGS];
+    private static readonly int[] runFlagCount = new int[256];
     private const int MAX_RUN_FLAGS = 256;
-    private static readonly byte[] runFlags = new byte[MAX_RUN_FLAGS];
-    private static readonly byte[] runFlagBuckets = new byte[256];
-    private static int runFlagCount = 0;
+
+    private static readonly bool[] rotKeyClaimed = new bool[256];
+    private static readonly string[] rotDebugNames = new string[256];
 
     /// <summary>
     /// Generates a unique key from caller location
@@ -27,16 +29,18 @@ public static class LuneLibUtils
 
     /// <summary>
     /// Runs something one time using a byte key
+    /// 
+    /// CLAIM THE ROT KEY YOU USE WITH ClaimROT() TO AVOID CONFLICTS WITH OTHER MODS.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool RunOneTime(byte key)
+    public static bool RunOneTime(byte key, int playerIndex = 255)
     {
-        if (runFlagBuckets[key] != 0)
+        if (runFlagBuckets[playerIndex, key] != 0)
             return false;
-        if (runFlagCount < MAX_RUN_FLAGS)
+        if (runFlagCount[playerIndex] < MAX_RUN_FLAGS)
         {
-            runFlags[runFlagCount++] = key;
-            runFlagBuckets[key] = 1;
+            runFlags[playerIndex, runFlagCount[playerIndex]++] = key;
+            runFlagBuckets[playerIndex, key] = 1;
             return true;
         }
         return false;
@@ -54,17 +58,16 @@ public static class LuneLibUtils
     /// Resets a specific RunOneTime key
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ResetROT(byte key)
+    public static void ResetROT(byte key, int playerIndex = 255)
     {
-        if (runFlagBuckets[key] == 0)
+        if (runFlagBuckets[playerIndex, key] == 0)
             return;
-        runFlagBuckets[key] = 0;
-        ref byte flagRef = ref MemoryMarshal.GetArrayDataReference(runFlags);
-        for (int i = 0; i < runFlagCount; i++)
+        runFlagBuckets[playerIndex, key] = 0;
+        for (int i = 0; i < runFlagCount[playerIndex]; i++)
         {
-            if (Unsafe.Add(ref flagRef, i) == key)
+            if (runFlags[playerIndex, i] == key)
             {
-                Unsafe.Add(ref flagRef, i) = runFlags[--runFlagCount];
+                runFlags[playerIndex, i] = runFlags[playerIndex, --runFlagCount[playerIndex]];
                 return;
             }
         }
@@ -74,12 +77,49 @@ public static class LuneLibUtils
     /// Resets all RunOneTime flags
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ResetROTAll()
+    public static void ResetROTAll(int playerIndex = 255)
     {
-        runFlagCount = 0;
-        Array.Clear(runFlagBuckets, 0, 256);
+        runFlagCount[playerIndex] = 0;
+        for (int k = 0; k < 256; k++)
+            runFlagBuckets[playerIndex, k] = 0;
     }
 
+
+    /// <summary>
+    /// claims a byte key and throws an exception if a key is reused. 
+    /// match this key with your ROT key to make sure no one reuses your key.
+    /// 
+    /// LuneLib and my mods use keys 0-15. 
+    /// use keys from 16-255 if you are a modder who for some reason decided this library was a good idea to use.
+    /// 
+    /// put the claims in mod.Load() or similar initialisation methods.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void ClaimROT(byte key, string name, string modName = "Unknown")
+    {
+        if (rotKeyClaimed[key])
+        {
+            throw new InvalidOperationException(
+                $"ROT key already in use, report to mods that depend on LuneLib that arent made by me.\n" +
+                $"Key: {key}\n" +
+                $"New: {name} ({modName})\n" +
+                $"Already used by: {rotDebugNames[key]}\n");
+        }
+
+        rotKeyClaimed[key] = true;
+        rotDebugNames[key] = $"{name} ({modName})";
+    }
+
+    /// <summary>
+    /// unloads all keys when mods are reloaded.
+    /// 
+    /// Do not call this method, it gets called automatically in LuneLib.Unload()
+    /// </summary>
+    internal static void ClearROTClaims()
+    {
+        Array.Clear(rotKeyClaimed, 0, rotKeyClaimed.Length);
+        Array.Clear(rotDebugNames, 0, rotDebugNames.Length);
+    }
     #endregion
 
     #region wait system
@@ -326,6 +366,21 @@ public static class LuneLibUtils
     }
 
     public static bool Submerged(this Player player) => Collision.DrownCollision(player.position, player.width, player.height, player.gravDir);
+
+    [JITWhenModsEnabled("CalamityMod")]
+    public static bool zoneAbyss(this Player player, int layer = 0)
+    {
+        if (!instance.CalamityModLoaded) return false;
+
+        return layer switch
+        {
+            1 => player.Calamity().ZoneAbyssLayer1,
+            2 => player.Calamity().ZoneAbyssLayer2,
+            3 => player.Calamity().ZoneAbyssLayer3,
+            4 => player.Calamity().ZoneAbyssLayer4,
+            _ => player.Calamity().ZoneAbyss,
+        };
+    }
 
     #endregion
 

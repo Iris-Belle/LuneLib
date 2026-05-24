@@ -1,8 +1,4 @@
-﻿using LuneLib.Utilities.Hashsets.Calamity;
-using LuneLib.Utilities.Hashsets.Spirit;
-using LuneLib.Utilities.Hashsets.Thorium;
-
-namespace LuneLib.Utilities.Hashsets;
+﻿namespace LuneLib.Utilities.Hashsets;
 
 public static class HashSets
 {

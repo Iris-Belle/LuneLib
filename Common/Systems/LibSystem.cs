@@ -55,14 +55,13 @@ public class LLibSystem : ModSystem
         }
         if (isDay && !wasDay)
         {
-            if (RunOneTime(7))
+            if (RunOneTime(3))
                 dayCount = 1;
             dayCount++;
             dSent = nSent = D6Done = day6StartTimerDone = TRReady = false;
-            ResetROT(2);
-            ResetROT(4);
             ResetROT(1);
-            ResetROT(3);
+            ResetROT(0);
+            ResetROT(2);
         }
         wasDay = isDay;
 
@@ -83,7 +82,7 @@ public class LLibSystem : ModSystem
 
         if (nSent)
         {
-            if (RunOneTime(2))
+            if (RunOneTime(1))
             {
                 _msgMgr.Enqueue(
                     text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.Drowsy"),
@@ -113,7 +112,7 @@ public class LLibSystem : ModSystem
 
         if (dayCount != 0 && dSent)
         {
-            if (RunOneTime(1))
+            if (RunOneTime(0))
             {
                 _msgMgr.Enqueue(
                     text: Language.GetTextValue($"Mods.LuneLib.Messages.Chat.Isle.Day{dayCount}"),
@@ -152,7 +151,7 @@ public class LLibSystem : ModSystem
 
         if (dayCount == 6 && TRReady)
         {
-            if (RunOneTime(3))
+            if (RunOneTime(2))
             {
                 TR1A = 255;
                 ResetTimer(4);
