@@ -19,3 +19,8 @@ DebugMessages: {
 
 Headers.Client: Client
 DisplayName: Client
+
+DaysHelpText: {
+	Tooltip: ""
+	Label: Days Help Text
+}

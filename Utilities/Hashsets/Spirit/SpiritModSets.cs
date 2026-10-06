@@ -3,31 +3,19 @@
 [JITWhenModsEnabled("SpiritMod")]
 public static class SpiritSets
 {
-    public static readonly HashSet<int> AbyssalProjectiles;
+    public static readonly HashSet<int> AquaticNPCs;
 
-    public static readonly HashSet<int> AbyssalNPCs;
-
-    public static readonly HashSet<int> AquaticBossProjectiles;
+    public static readonly HashSet<int> SpiritOreSet;
 
     static SpiritSets()
     {
         bool isSpiritLoaded = ModLoader.HasMod("SpiritMod");
         if (isSpiritLoaded)
         {
-
-            AbyssalProjectiles = isSpiritLoaded ? CreateSpiritProjSpecificTypes() : [];
-
-            AbyssalNPCs = isSpiritLoaded ? CreateSpiritNpcSpecificTypes() : [];
-
+            AquaticNPCs = CreateSpiritNpcSpecificTypes();
+            SpiritOreSet = CreateSpiritOreSet();
         }
     }
-
-    private static HashSet<int> CreateSpiritProjSpecificTypes() =>
-    [
-        ModContent.ProjectileType<RyBolt>(),
-        ModContent.ProjectileType<RyTentacle>(),
-        ModContent.ProjectileType<TentacleSquid>(),
-    ];
 
     private static HashSet<int> CreateSpiritNpcSpecificTypes() =>
     [
@@ -67,5 +55,19 @@ public static class SpiritSets
         ModContent.NPCType<WoodCrateMimic>(),
         ModContent.NPCType<IronCrateMimic>(),
         ModContent.NPCType<GoldCrateMimic>(),
+    ];
+
+    private static HashSet<int> CreateSpiritOreSet() =>
+    [
+        // prehardmode
+        ModContent.TileType<BismiteCrystalOre>(),
+        ModContent.TileType<FloranOreTile>(),
+        ModContent.TileType<MarbleOre>(),
+        ModContent.TileType<GraniteOre>(),
+        ModContent.TileType<Glowstone>(),
+        ModContent.TileType<CryoliteOreTile>(),
+
+        // hardmode
+        ModContent.TileType<SpiritOreTile>(),
     ];
 }

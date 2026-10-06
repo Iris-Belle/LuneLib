@@ -9,5 +9,5 @@ public class Server : ModConfig
     [DefaultValue(true)]
     public bool FreddyFiveBear { get; set; }
 
-    public override void OnLoaded() => serverConfig = this;
+    public override void OnLoaded() => _ServerConfig = this;
 }

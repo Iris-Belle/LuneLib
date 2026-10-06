@@ -3,14 +3,14 @@
 [JITWhenModsEnabled("CalValEX")]
 public static class CalEXSets
 {
-    #region Abyssal Npcs
+    #region Aquatic Npcs
 
-    public static readonly HashSet<int> AbyssalNPCs;
+    public static readonly HashSet<int> AquaticNPCs;
 
     static CalEXSets()
     {
         bool isCalValExLoaded = ModLoader.HasMod("CalValEX");
-        AbyssalNPCs = isCalValExLoaded ? CreateCalValExNpcSpecificTypes() : [];
+        AquaticNPCs = isCalValExLoaded ? CreateCalValExNpcSpecificTypes() : [];
     }
 
     private static HashSet<int> CreateCalValExNpcSpecificTypes() =>

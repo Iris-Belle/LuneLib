@@ -2,7 +2,7 @@
 
 public class HarHarHarHarHar : ModItem
 {
-    public override bool IsLoadingEnabled(Mod mod) => LuneLib.serverConfig.FreddyFiveBear;
+    public override bool IsLoadingEnabled(Mod mod) => _ServerConfig.FreddyFiveBear;
     public override string Texture => "LuneLib/Assets/Sprites/Items/FreddyFazbear";
     public override void SetStaticDefaults() => Item.ResearchUnlockCount = 1;
     public override void SetDefaults()

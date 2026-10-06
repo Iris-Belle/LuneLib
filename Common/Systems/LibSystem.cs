@@ -4,32 +4,77 @@ public class LLibSysPlr : ModPlayer
 {
     public override void OnEnterWorld()
     {
-        if (Player.whoAmI == Main.myPlayer)
-            LLibSystem.dayCount = 1;
+        if (Player.whoAmI != Main.myPlayer)
+            return;
+
+        LLibSystem.dayCount = 0;
+        LLibSystem.ResetStartup();
     }
 }
 
 public class LLibSystem : ModSystem
 {
+    internal static LLibSystem Instance;
+
+    public override void Load()
+    {
+        Instance = this;
+    }
+
+    public override void Unload()
+    {
+        Instance = null;
+    }
+
+    internal static void ResetStartup()
+    {
+        if (Instance is null)
+            return;
+
+        Instance._timers.Reset(Timers.StartupDelay);
+
+        Instance._once.Reset(Once.StartupMessage);
+        Instance._once.Reset(Once.DayMessage);
+        Instance._once.Reset(Once.NightMessage);
+        Instance._once.Reset(Once.Reset1Message);
+        Instance._once.Reset(Once.Reset2Message);
+
+        Instance.wasDay = false;
+        Instance.dSent = false;
+        Instance.nSent = false;
+    }
+
+    private enum Timers
+    {
+        StartupDelay,
+        Day6Reset1Delay,
+        Reset2Delay,
+    }
+
+    private enum Once
+    {
+        StartupMessage,
+        NightMessage,
+        DayMessage,
+        Day6SequenceStarted,
+        Reset1Message,
+        Reset2Message,
+    }
+
+    private readonly TimerSet<Timers> _timers = TimerSet<Timers>.ForEnum(true);
+    
+    private readonly FlagUtils<Once> _once = new();
+
     private readonly ScreenMessageManager _msgMgr = new();
 
-    public override bool IsLoadingEnabled(Mod mod) => clientConfig.Days;
-
-    internal static int
-        dayCount = 0,
-        TR2A = 255,
-        TR1A = 255,
-        DCA = 255,
-        DA = 255;
-
     private bool
-        wasDay = false,
-        day6StartTimerDone = false,
-        dSent = false,
-        nSent = false,
-        TR1Done = false,
-        TRReady = false,
-        D6Done = false;
+        wasDay,
+        dSent,
+        nSent;
+
+    internal static int dayCount = 0;
+
+    public override bool IsLoadingEnabled(Mod mod) => _ClientConfig.Days;
 
     public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
     {
@@ -43,169 +88,159 @@ public class LLibSystem : ModSystem
 
         if (hours == 22 && minutes == 30 && !nSent)
         {
-            ResetTimer(1);
-            DA = 255;
             nSent = true;
         }
+
         if (hours == 5 && minutes == 40 && !dSent)
         {
-            ResetTimer(2);
-            DCA = 255;
             dSent = true;
         }
+
         if (isDay && !wasDay)
         {
-            if (RunOneTime(3))
-                dayCount = 1;
-            dayCount++;
-            dSent = nSent = D6Done = day6StartTimerDone = TRReady = false;
-            ResetROT(1);
-            ResetROT(0);
-            ResetROT(2);
+            if (dayCount != 0)
+            {
+                dayCount++;
+
+                if (dayCount > 6)
+                    dayCount = 1;
+            }
+
+            dSent = false;
+            nSent = false;
+
+            _once.Reset(Once.DayMessage);
+            _once.Reset(Once.NightMessage);
+            _once.Reset(Once.Reset1Message);
+            _once.Reset(Once.Reset2Message);
+
+            _timers.Reset(Timers.Day6Reset1Delay);
+            _timers.Reset(Timers.Reset2Delay);
         }
+
         wasDay = isDay;
 
-        if (dayCount > 6)
-            dayCount = 1;
-
-        if (WaitNum(1, 180))
-            DA = Math.Max(0, DA - 1);
-
-        if (WaitNum(2, 180))
-            DCA = Math.Max(0, DCA - 1);
-
-        if (WaitNum(3, 360))
-            TR1A = Math.Max(0, TR1A - 1);
-
-        if (WaitNum(4, 300))
-            TR2A = Math.Max(0, TR2A - 1);
-
-        if (nSent)
+        if (nSent && _once.Once(Once.NightMessage))
         {
-            if (RunOneTime(1))
+            _msgMgr.Enqueue
+            (
+                text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.Drowsy"),
+                textSize: 1.5f,
+                startHeight: 300,
+                textR: 255, textG: 255, textB: 0, textA: 255,
+                bgA: 0,
+                lifetimeMs: 7000,
+                fadeInTimeMs: 250,
+                fadeOutTimeMs: 2000
+            );
+            if (_ClientConfig.DaysHelpText)
             {
-                _msgMgr.Enqueue(
-                    text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.Drowsy"),
-                    textSize: 1.5f,
-                    startHeight: 300,
-                    textR: 255, textG: 255, textB: 0, textA: 255,
+                _msgMgr.Enqueue
+                (
+                    text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.SHUTUPPPPP"),
+                    textSize: 0.75f,
+                    startHeight: 350,
+                    textR: 165, textG: 0, textB: 35, textA: 255,
                     bgA: 0,
                     lifetimeMs: 7000,
                     fadeInTimeMs: 250,
-                    fadeOutTimeMs: 2000
+                    fadeOutTimeMs: 2000,
+                    stack: false
                 );
-                if (clientConfig.dayshelptext)
-                {
-                    _msgMgr.Enqueue(text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.SHUTUPPPPP"),
-                        textSize: 0.75f,
-                        startHeight: 350,
-                        textR: 165, textG: 0, textB: 35, textA: 255,
-                        bgA: 0,
-                        lifetimeMs: 7000,
-                        fadeInTimeMs: 250,
-                        fadeOutTimeMs: 2000,
-                        stack: false
-                        );
-                }
             }
         }
 
-        if (dayCount != 0 && dSent)
+        if (dSent && dayCount != 0 && _once.Once(Once.DayMessage))
         {
-            if (RunOneTime(0))
+            _msgMgr.Enqueue
+            (
+                text: Language.GetTextValue($"Mods.LuneLib.Messages.Chat.Isle.Day{dayCount}"),
+                textSize: 1.5f,
+                startHeight: 300,
+                textR: 255, textG: 255, textB: 0, textA: 255,
+                bgA: 0,
+                lifetimeMs: 6000,
+                fadeInTimeMs: 0,
+                fadeOutTimeMs: 2000
+            );
+
+            if (_ClientConfig.DaysHelpText)
             {
-                _msgMgr.Enqueue(
-                    text: Language.GetTextValue($"Mods.LuneLib.Messages.Chat.Isle.Day{dayCount}"),
-                    textSize: 1.5f,
-                    startHeight: 300,
-                    textR: 255, textG: 255, textB: 0, textA: DCA,
+                _msgMgr.Enqueue
+                (
+                    text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.SHUTUPPPPP"),
+                    textSize: 0.75f,
+                    startHeight: 350,
+                    textR: 165, textG: 0, textB: 35, textA: 255,
                     bgA: 0,
                     lifetimeMs: 6000,
                     fadeInTimeMs: 0,
-                    fadeOutTimeMs: 2000
+                    fadeOutTimeMs: 2000,
+                    stack: false
                 );
-                if (clientConfig.dayshelptext)
-                {
-                    _msgMgr.Enqueue(text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.SHUTUPPPPP"),
-                        textSize: 0.75f,
-                        startHeight: 350,
-                        textR: 165, textG: 0, textB: 35, textA: 255,
-                        bgA: 0,
-                        lifetimeMs: 6000,
-                        fadeInTimeMs: 0,
-                        fadeOutTimeMs: 2000,
-                        stack: false
-                        );
-                }
-                if (dayCount == 6)
-                {
-                    D6Done = true;
-                    ResetTimer(5);
-                }
+            }
+
+            if (dayCount == 6)
+            {
+                _once.Once(Once.Day6SequenceStarted);
+                _timers.Reset(Timers.Day6Reset1Delay);
             }
         }
 
-        if (D6Done)
-            if (WaitNum(5, 450))
-                TRReady = true;
-
-        if (dayCount == 6 && TRReady)
+        if (_once.IsSet(Once.Day6SequenceStarted) && !_once.IsSet(Once.Reset1Message) && _timers.Tick(Timers.Day6Reset1Delay, 450))
         {
-            if (RunOneTime(2))
-            {
-                TR1A = 255;
-                ResetTimer(4);
-                _msgMgr.Enqueue(
-                    text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.TheReset1"),
-                    textSize: 1.5f,
-                    startHeight: 300,
-                    textR: 7, textG: 242, textB: 242, textA: TR1A,
-                    bgA: 0,
-                    lifetimeMs: 8000,
-                    fadeInTimeMs: 0,
-                    fadeOutTimeMs: 2000
+            _once.Once(Once.Reset1Message);
+            _timers.Reset(Timers.Reset2Delay);
 
-                );
-                TR1Done = true;
-                ResetTimer(5);
-            }
-        }
-
-        if (TR1Done)
-            if (WaitNum(6, 360))
-            {
-                day6StartTimerDone = true;
-                TR1Done = false;
-            }
-
-        if (day6StartTimerDone)
-        {
-            TR2A = 255;
-            ResetTimer(6);
             _msgMgr.Enqueue(
-                text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.TheReset2"),
+                text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.TheReset1"),
                 textSize: 1.5f,
                 startHeight: 300,
-                textR: 7, textG: 242, textB: 242, textA: TR2A,
+                textR: 7,
+                textG: 242,
+                textB: 242,
+                textA: 255,
                 bgA: 0,
                 lifetimeMs: 8000,
                 fadeInTimeMs: 0,
                 fadeOutTimeMs: 2000
             );
-            if (clientConfig.dayshelptext)
+        }
+        else if (_once.IsSet(Once.Reset1Message) && !_once.IsSet(Once.Reset2Message) && _timers.Tick(Timers.Reset2Delay, 360))
+        {
+            _once.Once(Once.Reset2Message);
+
+            _msgMgr.Enqueue(
+                text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.TheReset2"),
+                textSize: 1.5f,
+                startHeight: 300,
+                textR: 7,
+                textG: 242,
+                textB: 242,
+                textA: 255,
+                bgA: 0,
+                lifetimeMs: 8000,
+                fadeInTimeMs: 0,
+                fadeOutTimeMs: 2000
+            );
+
+            if (_ClientConfig.DaysHelpText)
             {
-                _msgMgr.Enqueue(text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.SHUTUPPPPP"),
+                _msgMgr.Enqueue(
+                    text: Language.GetTextValue("Mods.LuneLib.Messages.Chat.Isle.SHUTUPPPPP"),
                     textSize: 0.75f,
                     startHeight: 350,
-                    textR: 165, textG: 0, textB: 35, textA: 255,
+                    textR: 165,
+                    textG: 0,
+                    textB: 35,
+                    textA: 255,
                     bgA: 0,
                     lifetimeMs: 8000,
                     fadeInTimeMs: 0,
                     fadeOutTimeMs: 2000,
                     stack: false
-                    );
+                );
             }
-            day6StartTimerDone = false;
         }
         _msgMgr.Draw();
     }

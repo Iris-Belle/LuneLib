@@ -1,10 +1,10 @@
-﻿namespace LuneLib.Common.Systems;
-
-internal class Tick : ModPlayer
+﻿namespace LuneLib.Common.Systems
 {
-    public override void PostUpdate()
+    internal class Tick : ModSystem
     {
-        if (Player.whoAmI == Main.myPlayer)
-            Tick();
+        public override void PostUpdateEverything()
+        {
+            TimerUtils.TimerUtils.Update();
+        }
     }
 }

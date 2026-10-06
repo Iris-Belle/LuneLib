@@ -2,29 +2,36 @@
 
 public partial class LibPlayer : ModPlayer
 {
+    #region future me, these flags are for DOT checks
     public bool SpaceVacuum = false; // In-space debuff
-    public bool BlizzardFrozen = false; //Frozen Blizzard
-    public bool Chilly = false; //in tundra
-    public bool CrimtuptionzoneNight = false; // In crimtuption during night
-    public bool WaterEyes = false; // used for darker waters
-    public bool StormEyeCovered = false; // i think this is for the blizzard and or the sandstorm
-    public bool IrisSpiritPet = false; // Custom pet
-    public bool IsIris = false; // self explanatory
+    public bool InEvilBiomeAtNight = false; // In crimtuption during night
 
-    public bool depthwaterPressure = false; // owie not the billionare sub!!1
-    public int currentDepthPressure = 0; // how deep = how many damage taje!!!1
+    public bool TundraGivesChilled = false; //in tundra
+    public bool BlizzardGivesFrozen = false; //Frozen Blizzard 
+
+    public bool DepthWaterPressure = false; // owie not the billionare sub!!1
+    #endregion
+
+    public bool MurkyWaterFlag = false;
+    public bool ReducedVisionInStorms = false; // sandstorm
+    public int CurrentDepthPressure = 0; // how deep = how many damage taje!!!1
+    public bool IrisSpiritPet = false; // Custom pet
     public override void ResetEffects()
     {
         SpaceVacuum = false;
-        BlizzardFrozen = false;
-        CrimtuptionzoneNight = false;
-        Chilly = false;
-        WaterEyes = false;
-        StormEyeCovered = false;
+        InEvilBiomeAtNight = false;
 
-        depthwaterPressure = false;
-        currentDepthPressure = 0;
-        
+        TundraGivesChilled = false;
+        BlizzardGivesFrozen = false; 
+
+        MurkyWaterFlag = false;
+        ReducedVisionInStorms = false;
+
+        DepthWaterPressure = false;
+        CurrentDepthPressure = 0;
+
+        IrisSpiritPet = false;
+
         WearingDivingHelm = false;
         WearingDivingGear = false;
         WearingJellyfishDivingGear = false;
@@ -60,7 +67,5 @@ public partial class LibPlayer : ModPlayer
         WearingOneMetalPiece = false;
         WearingTwoMetalPieces = false;
         WearingFullMetal = false;
-
-        IrisSpiritPet = false;
     }
 }

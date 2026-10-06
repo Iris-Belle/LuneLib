@@ -149,7 +149,7 @@ public partial class LibPlayer : ModPlayer
         int num = 0;
         for (int i = 0; i < 3; i++)
         {
-            if (VanillaMetallicSets.MetallicArmourSets.Contains(Player.armor[i].type))
+            if (VanillaSets.MetallicArmourSets.Contains(Player.armor[i].type))
             { num++; }
         }
         return num;
@@ -301,10 +301,9 @@ public partial class LibPlayer : ModPlayer
     }
 
     [JITWhenModsEnabled("CalamityMod")]
-    public class CalamityDivingAccessoryGlobalItem : GlobalItem
+    internal class CalamityDivingAccessoryGlobalItem : GlobalItem
     {
-        public override bool IsLoadingEnabled(Mod mod)
-            => ModLoader.HasMod("CalamityMod");
+        public override bool IsLoadingEnabled(Mod mod) => ModLoader.HasMod("CalamityMod");
 
         [JITWhenModsEnabled("CalamityMod")]
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)

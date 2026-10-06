@@ -3,11 +3,7 @@
 [JITWhenModsEnabled("ThoriumMod")]
 public class ThorSets
 {
-    public static readonly HashSet<int> AbyssalProjectiles;
-
-    public static readonly HashSet<int> AbyssalNPCs;
-
-    public static readonly HashSet<int> AquaticBossProjectiles;
+    public static readonly HashSet<int> AquaticNPCs;
 
     public static readonly HashSet<int> AquaticBosses;
 
@@ -15,43 +11,26 @@ public class ThorSets
 
     public static readonly HashSet<int> IsAquaticWall;
 
+    public static readonly HashSet<int> ThoriumOreSet;
+
     static ThorSets()
     {
 
         bool isThorLoaded = ModLoader.HasMod("ThoriumMod");
+        if (isThorLoaded)
+        {
+            AquaticNPCs = CreateThorNpcSpecificTypes();
 
-        AbyssalProjectiles = isThorLoaded ? CreateThorProjSpecificTypes() : [];
+            AquaticBosses = CreateThorBossSpecificTypes();
 
-        AbyssalNPCs = isThorLoaded ? CreateThorNpcSpecificTypes() : [];
+            IsAquaticTile = CreateThorTileSpecificTypes();
 
-        AquaticBossProjectiles = isThorLoaded ? CreateThorBossProjSpecificTypes() : [];
+            IsAquaticWall = CreateThorWallSpecificTypes();
 
-        AquaticBosses = isThorLoaded ? CreateThorBossSpecificTypes() : [];
-
-        IsAquaticTile = isThorLoaded ? CreateThorTileSpecificTypes() : [];
-
-        IsAquaticWall = isThorLoaded ? CreateThorWallSpecificTypes() : [];
+            ThoriumOreSet = CreateThoriumOreSet();
+        }
 
     }
-
-    private static HashSet<int> CreateThorProjSpecificTypes() =>
-    [
-        #region Ocean Proj
-
-        ModContent.ProjectileType<BubblePulse>(),
-
-        #endregion
-
-        #region Aquatic depths
-
-            ModContent.ProjectileType<BlowfishStinger>(),
-            ModContent.ProjectileType<HostilePearl>(),
-            ModContent.ProjectileType<OctopusArm>(),
-            ModContent.ProjectileType<KrakenArm>(),
-            ModContent.ProjectileType<SerpentSpit>(),
-
-        #endregion
-    ];
 
     private static HashSet<int> CreateThorNpcSpecificTypes() =>
     [
@@ -123,30 +102,6 @@ public class ThorSets
 
     ];
 
-    private static HashSet<int> CreateThorBossProjSpecificTypes() =>
-    [
-        #region Ocean Proj
-
-            ModContent.ProjectileType<BubbleBomb>(),
-            ModContent.ProjectileType<QueenTorrent>(),
-            ModContent.ProjectileType<QueenJellyfishArm>(),
-
-        #endregion
-
-        #region Aquatic depths
-
-            ModContent.ProjectileType<Whirlpool>(),
-            ModContent.ProjectileType<ForgottenOneSpit>(),
-            ModContent.ProjectileType<ForgottenOneSpit2>(),
-            ModContent.ProjectileType<AquaRipple>(),
-            ModContent.ProjectileType<AbyssalStrike>(),
-            ModContent.ProjectileType<AbyssalStrike2>(),
-            ModContent.ProjectileType<OldGodSpit>(),
-            ModContent.ProjectileType<OldGodSpit2>(),
-
-        #endregion
-    ];
-
     private static HashSet<int> CreateThorBossSpecificTypes() =>
     [
         ModContent.NPCType<QueenJellyfish>(),
@@ -190,5 +145,21 @@ public class ThorSets
         ModContent.WallType<RefinedMarineWall>(),
         ModContent.WallType<AquaiteScaleWall>(),
 
+    ];
+
+    private static HashSet<int> CreateThoriumOreSet() =>
+    [
+        // prehardmode
+        ModContent.TileType<SynthGold>(),
+        ModContent.TileType<SynthPlatinum>(),
+        ModContent.TileType<SmoothCoal>(),
+        ModContent.TileType<LifeQuartz>(),
+        ModContent.TileType<ThoriumOre>(),
+        ModContent.TileType<Aquaite>(),
+
+        // hardmode
+        ModContent.TileType<LodeStone>(),
+        ModContent.TileType<ValadiumChunk>(),
+        ModContent.TileType<IllumiteChunk>(),
     ];
 }

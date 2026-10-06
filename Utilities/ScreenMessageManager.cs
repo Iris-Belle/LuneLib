@@ -1,9 +1,5 @@
 ﻿namespace LuneLib.Utilities;
 
-/// <summary>
-/// Manages on-screen messages: queuing, stacking, fading in and out, and expiration
-/// Includes logarithmic transitions for smooth stacking :3c
-/// </summary>
 public class ScreenMessageManager
 {
     private class MessageEntry
@@ -29,10 +25,6 @@ public class ScreenMessageManager
     public static readonly Dictionary<string, bool> LogarithmicComplete = [];
     private static readonly Dictionary<string, DateTime> LastUpdateTime = [];
 
-    /// <summary>
-    /// Logarithmically transitions one number to another :3
-    /// key is a unique string you have to give :3
-    /// </summary>
     public static double LogarithmicTransition(string key, int startPosition, int targetPosition, double smoothing = 0.1)
     {
         smoothing = MathHelper.Clamp((float)smoothing, 0.01f, 1f);
@@ -64,9 +56,6 @@ public class ScreenMessageManager
         return current;
     }
 
-    /// <summary>
-    /// Queue a new screen message :3
-    /// </summary>
     public void Enqueue(
         string text,
         float textSize,
@@ -125,22 +114,12 @@ public class ScreenMessageManager
         }
     }
 
-    /// <summary>
-    /// Call each frame to draw and update all queued messages :3
-    /// </summary>
     public void Draw()
     {
         if (_background == null || _messages.Count == 0)
             return;
 
-        Main.spriteBatch.Begin(
-            SpriteSortMode.Deferred,
-            BlendState.AlphaBlend,
-            SamplerState.PointClamp,
-            DepthStencilState.None,
-            RasterizerState.CullCounterClockwise,
-            null,
-            Main.UIScaleMatrix);
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
         try
         {
             int now = Environment.TickCount;
@@ -171,16 +150,7 @@ public class ScreenMessageManager
                 Color bgColor = msg.BgColor * fadeFactor;
                 if (bgColor.A > 0)
                     Main.spriteBatch.Draw(_background, new Rectangle(0, 0, Main.screenWidth + 32, Main.screenHeight + 32), bgColor);
-                Main.spriteBatch.DrawString(
-                    FontAssets.MouseText.Value,
-                    msg.Text,
-                    drawPos,
-                    textColor,
-                    0f,
-                    Vector2.Zero,
-                    msg.TextSize,
-                    SpriteEffects.None,
-                    0f);
+                Main.spriteBatch.DrawString(FontAssets.MouseText.Value, msg.Text, drawPos, textColor, 0f, Vector2.Zero, msg.TextSize, SpriteEffects.None, 0f);
             }
         }
         finally

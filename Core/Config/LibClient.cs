@@ -6,14 +6,11 @@ public class Client : ModConfig
 
     [Header("Client")]
 
-    [DefaultValue(false)]
-    public bool DebugMessages { get; set; }
-
     [DefaultValue(true)]
-    public bool dayshelptext { get; set; }
+    public bool DaysHelpText { get; set; }
 
     [DefaultValue(true)]
     public bool Days { get; set; }
 
-    public override void OnLoaded() => clientConfig = this;
+    public override void OnLoaded() => _ClientConfig = this;
 }

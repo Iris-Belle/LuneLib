@@ -4,11 +4,9 @@
 public static class CalSets
 {
 
-    public static readonly HashSet<int> AbyssalProjectiles;
+    public static readonly HashSet<int> AquaticProjectiles;
 
-    public static readonly HashSet<int> AbyssalNPCs;
-
-    public static readonly HashSet<int> AquaticBossProjectiles;
+    public static readonly HashSet<int> AquaticNPCs;
 
     public static readonly HashSet<int> AquaticBosses;
 
@@ -16,26 +14,22 @@ public static class CalSets
 
     public static readonly HashSet<int> IsAquaticWall;
 
+    public static readonly HashSet<int> CalOreSet;
+
     static CalSets()
     {
 
         bool isCalLoaded = ModLoader.HasMod("CalamityMod");
-
-        AbyssalProjectiles = isCalLoaded ? CreateCalProjSpecificTypes() : [];
-
-        AbyssalNPCs = isCalLoaded ? CreateCalNpcSpecificTypes() : [];
-
-        AquaticBossProjectiles = isCalLoaded ? CreateCalBossProjSpecificTypes() : [];
-
-        AquaticBosses = isCalLoaded ? CreateCalBossSpecificTypes() : [];
-
-        IsAquaticTile = isCalLoaded ? CreateCalTileSpecificTypes() : [];
-
-        IsAquaticWall = isCalLoaded ? CreateCalWallSpecificTypes() : [];
-
+        if (isCalLoaded) 
+        {
+            AquaticProjectiles = CreateCalProjSpecificTypes();
+            AquaticNPCs = CreateCalNpcSpecificTypes();
+            AquaticBosses = CreateCalBossSpecificTypes();
+            IsAquaticTile = CreateCalTileSpecificTypes();
+            IsAquaticWall = CreateCalWallSpecificTypes();
+            CalOreSet = CreateCalOreSet();
+        }
     }
-
-    #region Abyssal Projectiles
 
     private static HashSet<int> CreateCalProjSpecificTypes() =>
     [
@@ -47,20 +41,6 @@ public static class CalSets
                 ModContent.ProjectileType<SulphuricAcidMist>(),
                 ModContent.ProjectileType<SulphuricAcidBubble>(),
                 ModContent.ProjectileType<AcidDrop>(),
-                ModContent.ProjectileType<BelchingCoralSpike>(),
-                ModContent.ProjectileType<FlakAcid>(),
-                ModContent.ProjectileType<GammaAcid>(),
-                ModContent.ProjectileType<GammaBeam>(),
-                ModContent.ProjectileType<NuclearToadGoo>(),
-                ModContent.ProjectileType<OrthoceraStream>(),
-                ModContent.ProjectileType<CrabBoulder>(),
-                ModContent.ProjectileType<TrilobiteSpike>(),
-
-            #endregion
-
-            #region Sunken Sea
-
-                ModContent.ProjectileType<HorsWaterBlast>(),
 
             #endregion
 
@@ -71,35 +51,11 @@ public static class CalSets
                 ModContent.ProjectileType<ThermalSteam>(),
                 ModContent.ProjectileType<HotSteam>(),
 
-                #region Abyss Layer1
-
-                    ModContent.ProjectileType<ToxicMinnowCloud>(),
-
-                #endregion
-
-                #region Abyss Layer2
-
-                #endregion
-
-                #region Abyss Layer3
-
-                    ModContent.ProjectileType<PufferExplosion>(),
-
-                #endregion
-
-                #region Abyss Layer4
-
-                #endregion
-
             #endregion
 
         #endregion
 
     ];
-
-    #endregion
-
-    #region Abyssal Npcs
 
     private static HashSet<int> CreateCalNpcSpecificTypes() =>
     [
@@ -225,100 +181,6 @@ public static class CalSets
 
     ];
 
-    #endregion
-
-    #region Aquatic Boss Projectiles
-
-    private static HashSet<int> CreateCalBossProjSpecificTypes() =>
-    [
-
-        #region Anahita
-
-            ModContent.ProjectileType<WaterSpear>(),
-            ModContent.ProjectileType<FrostMist>(),
-
-        #endregion
-
-        #region Leviathan
-
-            ModContent.ProjectileType<LeviathanBomb>(),
-
-        #endregion
-
-        #region Old Duke
-
-            ModContent.ProjectileType<OldDukeToothBallSpike>(),
-            ModContent.ProjectileType<OldDukeVortex>(),
-            ModContent.ProjectileType<SandPoisonCloudOldDuke>(),
-            ModContent.ProjectileType<OverlyDramaticDukeSummoner>(),
-
-        #endregion
-
-        #region Aquatic Scourge
-
-            ModContent.ProjectileType<ToxicCloud>(),
-            ModContent.ProjectileType<SandTooth>(),
-            ModContent.ProjectileType<SandPoisonCloud>(),
-
-        #endregion
-
-        #region Acid Rain
-
-            #region CragmawMire
-
-                ModContent.ProjectileType<CragmawSpike>(),
-                ModContent.ProjectileType<CragmawExplosion>(),
-                ModContent.ProjectileType<CragmawAcidDrop>(),
-                ModContent.ProjectileType<CragmawBeam>(),
-                ModContent.ProjectileType<CragmawVibeCheckChain>(),
-
-            #endregion
-
-            #region Mauler
-
-                ModContent.ProjectileType<MaulerAcidBubble>(),
-                ModContent.ProjectileType<MaulerAcidDrop>(),
-
-            #endregion
-
-            #region Nuclear Terror
-
-                ModContent.ProjectileType<GammaRayBurst>(),
-                ModContent.ProjectileType<NuclearBulletMedium>(),
-                ModContent.ProjectileType<NuclearBulletLarge>(),
-
-            #endregion
-
-        #endregion
-
-        #region Giant Clam
-
-            ModContent.ProjectileType<PearlBurst>(),
-            ModContent.ProjectileType<PearlRain>(),
-
-        #endregion
-
-        #region Colossal Squidward
-
-            ModContent.ProjectileType<InkBombHostile>(),
-            ModContent.ProjectileType<InkPoisonCloud>(),
-
-        #endregion
-
-        #region Primordial Wyrm (Adult Eidolon Wyrm)
-
-        #endregion
-
-        #region Reaper? aw man... so we back in the mine
-
-        #endregion
-
-    ];
-
-    #endregion
-
-    #region Aquatic Bosses
-
     private static HashSet<int> CreateCalBossSpecificTypes() =>
     [
 
@@ -392,10 +254,6 @@ public static class CalSets
 
     ];
 
-    #endregion
-
-    #region Is Aquatic Tile
-
     private static HashSet<int> CreateCalTileSpecificTypes() =>
     [
 
@@ -417,10 +275,6 @@ public static class CalSets
 
     ];
 
-    #endregion
-
-    #region Is Aquatic Wall
-
     private static HashSet<int> CreateCalWallSpecificTypes() =>
     [
 
@@ -441,5 +295,24 @@ public static class CalSets
 
     ];
 
-    #endregion
+    private static HashSet<int> CreateCalOreSet() =>
+    [
+        // prehardmode
+        ModContent.TileType<SeaPrism>(),
+        ModContent.TileType<AerialiteOre>(),
+
+        // hardmode
+        ModContent.TileType<AerialiteOreDisenchanted>(),
+        ModContent.TileType<InfernalSuevite>(),
+        ModContent.TileType<CryonicOre>(),
+        ModContent.TileType<HallowedOre>(),
+        ModContent.TileType<PerennialOre>(),
+        ModContent.TileType<ScoriaOre>(),
+        ModContent.TileType<AstralOre>(),
+
+        // postmoonguy
+        ModContent.TileType<ExodiumOre>(),
+        ModContent.TileType<UelibloomOre>(),
+        ModContent.TileType<AuricOre>(),
+    ];
 }
