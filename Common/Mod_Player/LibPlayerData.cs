@@ -2,20 +2,19 @@
 
 public partial class LibPlayer : ModPlayer
 {
-    #region future me, these flags are for DOT checks
+    #region future me, these flags are for DOT checks // ohhh okay thanks past me
     public bool SpaceVacuum = false; // In-space debuff
     public bool InEvilBiomeAtNight = false; // In crimtuption during night
 
     public bool TundraGivesChilled = false; //in tundra
-    public bool BlizzardGivesFrozen = false; //Frozen Blizzard 
+    public bool BlizzardGivesFrozen = false; //blizzard do freezy
 
     public bool DepthWaterPressure = false; // owie not the billionare sub!!1
     #endregion
 
     public bool MurkyWaterFlag = false;
-    public bool ReducedVisionInStorms = false; // sandstorm
     public int CurrentDepthPressure = 0; // how deep = how many damage taje!!!1
-    public bool IrisSpiritPet = false; // Custom pet
+    public bool IrisPet = false; // custom pet
     public override void ResetEffects()
     {
         SpaceVacuum = false;
@@ -25,12 +24,11 @@ public partial class LibPlayer : ModPlayer
         BlizzardGivesFrozen = false; 
 
         MurkyWaterFlag = false;
-        ReducedVisionInStorms = false;
 
         DepthWaterPressure = false;
         CurrentDepthPressure = 0;
 
-        IrisSpiritPet = false;
+        IrisPet = false;
 
         WearingDivingHelm = false;
         WearingDivingGear = false;
